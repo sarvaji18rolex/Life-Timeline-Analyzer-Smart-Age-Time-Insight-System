@@ -118,3 +118,9 @@ CREATE TABLE user_data (
 | Fonts | Google Fonts (Syne + DM Sans + JetBrains Mono) |
 | Icons | Bootstrap Icons |
 | Timezone | pytz |
+
+
+
+
+output:
+
