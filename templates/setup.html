@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Setup · Life Timeline{% endblock %}
+
+{% block body %}
+<div class="auth-bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="auth-card glass-card" style="max-width:480px">
+    <div class="auth-logo">
+      <span class="logo-icon">⧖</span>
+      <span class="logo-text">Life<span class="accent">Line</span></span>
+    </div>
+
+    <h1 class="auth-title">
+      {% if existing_data %}Edit Your Profile{% else %}One Last Step{% endif %}
+    </h1>
+    <p class="auth-subtitle">
+      {% if existing_data %}Update your date of birth or timezone{% else %}Tell us when you were born{% endif %}
+    </p>
+
+    {% if error %}
+    <div class="alert-glass alert-danger-glass mb-3">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/setup" novalidate>
+      <label class="glass-label">Date of Birth</label>
+      <div class="input-group-glass mb-4">
+        <i class="bi bi-calendar3 input-icon"></i>
+        <input type="date" name="dob"
+               class="glass-input"
+               value="{{ existing_data.dob if existing_data else '' }}"
+               max="{{ now }}"
+               required />
+      </div>
+
+      <label class="glass-label">Your Timezone</label>
+      <div class="input-group-glass mb-5">
+        <i class="bi bi-globe input-icon"></i>
+        <select name="timezone" class="glass-input glass-select" id="tzSelect">
+          <!-- Populated by JS -->
+        </select>
+      </div>
+
+      <button type="submit" class="btn-primary-glass w-100">
+        <span>{{ 'Save Changes' if existing_data else 'Launch My Dashboard' }}</span>
+        <i class="bi bi-rocket-takeoff ms-2"></i>
+      </button>
+    </form>
+
+    {% if existing_data %}
+    <p class="auth-footer">
+      <a href="/dashboard" class="auth-link">← Back to Dashboard</a>
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Populate timezone select from browser's Intl
+  const tzSelect   = document.getElementById('tzSelect');
+  const savedTz    = "{{ existing_data.timezone if existing_data else '' }}";
+  const browserTz  = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const timezones = Intl.supportedValuesOf
+    ? Intl.supportedValuesOf('timeZone')
+    : ["UTC","Asia/Kolkata","America/New_York","America/Los_Angeles","Europe/London","Europe/Paris","Asia/Tokyo","Australia/Sydney"];
+
+  timezones.forEach(tz => {
+    const opt = document.createElement('option');
+    opt.value = tz;
+    opt.textContent = tz.replace(/_/g, ' ');
+    if (tz === (savedTz || browserTz)) opt.selected = true;
+    tzSelect.appendChild(opt);
+  });
+</script>
+{% endblock %}

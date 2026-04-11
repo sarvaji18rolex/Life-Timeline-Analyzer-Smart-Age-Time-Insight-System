@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Register · Life Timeline{% endblock %}
+
+{% block body %}
+<div class="auth-bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="auth-card glass-card">
+    <div class="auth-logo">
+      <span class="logo-icon">⧖</span>
+      <span class="logo-text">Life<span class="accent">Line</span></span>
+    </div>
+
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-subtitle">Start your personal timeline</p>
+
+    {% if error %}
+    <div class="alert-glass alert-danger-glass">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/register" novalidate>
+      <div class="input-group-glass mb-3">
+        <i class="bi bi-person input-icon"></i>
+        <input type="text" name="username" placeholder="Choose a username"
+               class="glass-input" required />
+      </div>
+
+      <div class="input-group-glass mb-3">
+        <i class="bi bi-envelope input-icon"></i>
+        <input type="email" name="email" placeholder="Email address"
+               class="glass-input" required />
+      </div>
+
+      <div class="input-group-glass mb-4">
+        <i class="bi bi-lock input-icon"></i>
+        <input type="password" name="password" placeholder="Password (min 6 chars)"
+               class="glass-input" required minlength="6" />
+      </div>
+
+      <button type="submit" class="btn-primary-glass w-100">
+        <span>Create Account</span>
+        <i class="bi bi-arrow-right ms-2"></i>
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account?
+      <a href="/login" class="auth-link">Sign in →</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

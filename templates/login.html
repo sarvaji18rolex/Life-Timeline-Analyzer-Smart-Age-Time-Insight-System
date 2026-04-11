@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Login · Life Timeline{% endblock %}
+
+{% block body %}
+<div class="auth-bg">
+  <!-- Animated orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="auth-card glass-card">
+    <div class="auth-logo">
+      <span class="logo-icon">⧖</span>
+      <span class="logo-text">Life<span class="accent">Line</span></span>
+    </div>
+
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-subtitle">Sign in to your timeline</p>
+
+    {% if error %}
+    <div class="alert-glass alert-danger-glass">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/login" novalidate>
+      <div class="input-group-glass mb-4">
+        <i class="bi bi-person input-icon"></i>
+        <input type="text" name="username" placeholder="Username"
+               class="glass-input" required autocomplete="username" />
+      </div>
+
+      <div class="input-group-glass mb-4">
+        <i class="bi bi-lock input-icon"></i>
+        <input type="password" name="password" placeholder="Password"
+               class="glass-input" required autocomplete="current-password" />
+      </div>
+
+      <button type="submit" class="btn-primary-glass w-100">
+        <span>Sign In</span>
+        <i class="bi bi-arrow-right ms-2"></i>
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      New here?
+      <a href="/register" class="auth-link">Create an account →</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Life Timeline{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+  <aside class="sidebar glass-card">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⧖</span>
+      <span class="logo-text">Life<span class="accent">Line</span></span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#overview"   class="nav-item active"><i class="bi bi-grid-1x2"></i><span>Overview</span></a>
+      <a href="#charts"     class="nav-item"><i class="bi bi-bar-chart-line"></i><span>Charts</span></a>
+      <a href="#biostats"   class="nav-item"><i class="bi bi-heart-pulse"></i><span>Bio Stats</span></a>
+      <a href="#insights"   class="nav-item"><i class="bi bi-lightbulb"></i><span>Insights</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="/setup" class="nav-item"><i class="bi bi-pencil-square"></i><span>Edit Profile</span></a>
+      <a href="/logout" class="nav-item nav-danger"><i class="bi bi-box-arrow-left"></i><span>Logout</span></a>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ────────────────────────────────────────────────────── -->
+  <main class="dashboard-main">
+
+    <!-- Top Bar -->
+    <header class="dash-header glass-card">
+      <div class="header-left">
+        <h2 class="page-title">
+          Hello, <span class="accent">{{ username }}</span> 👋
+        </h2>
+        <p class="page-subtitle">Born <span class="mono">{{ dob }}</span> · Your life, quantified.</p>
+      </div>
+      <div class="header-right">
+        <!-- Live Clock -->
+        <div class="live-clock-wrap">
+          <div id="liveClock" class="live-clock mono"></div>
+          <div id="liveDate"  class="live-date"></div>
+        </div>
+        <!-- Export PDF -->
+        <a href="/export/pdf" class="btn-export glass-card">
+          <i class="bi bi-file-earmark-pdf"></i>
+          <span>Export PDF</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- ── Section: Overview ────────────────────────────────────────────── -->
+    <section id="overview" class="dash-section">
+      <h3 class="section-title">⏱ Live Age Counter</h3>
+
+      <!-- Age Banner -->
+      <div class="age-banner glass-card">
+        <div class="age-unit">
+          <span class="age-num" id="ageYears">{{ stats.age.years }}</span>
+          <span class="age-label">Years</span>
+        </div>
+        <div class="age-sep">:</div>
+        <div class="age-unit">
+          <span class="age-num" id="ageMonths">{{ stats.age.months }}</span>
+          <span class="age-label">Months</span>
+        </div>
+        <div class="age-sep">:</div>
+        <div class="age-unit">
+          <span class="age-num" id="ageDays">{{ stats.age.days }}</span>
+          <span class="age-label">Days</span>
+        </div>
+        <div class="age-sep">:</div>
+        <div class="age-unit highlight">
+          <span class="age-num mono" id="ageSeconds">{{ stats.totals.seconds }}</span>
+          <span class="age-label">Seconds <span class="live-dot">●</span></span>
+        </div>
+      </div>
+
+      <!-- Stat Cards Row -->
+      <div class="cards-grid">
+        <div class="stat-card glass-card" data-icon="📅">
+          <div class="stat-val counter" id="totalDays">{{ stats.totals.days }}</div>
+          <div class="stat-label">Total Days</div>
+        </div>
+        <div class="stat-card glass-card" data-icon="📆">
+          <div class="stat-val counter" id="totalWeeks">{{ stats.totals.weeks }}</div>
+          <div class="stat-label">Total Weeks</div>
+        </div>
+        <div class="stat-card glass-card" data-icon="⏰">
+          <div class="stat-val counter" id="totalHours">{{ stats.totals.hours }}</div>
+          <div class="stat-label">Total Hours</div>
+        </div>
+        <div class="stat-card glass-card" data-icon="⏱">
+          <div class="stat-val counter" id="totalMins">{{ stats.totals.minutes }}</div>
+          <div class="stat-label">Total Minutes</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section: Life Progress ────────────────────────────────────────── -->
+    <section class="dash-section">
+      <div class="two-col-grid">
+
+        <!-- Life Progress -->
+        <div class="glass-card progress-card">
+          <h3 class="card-title">
+            <i class="bi bi-hourglass-split accent"></i> Life Progress
+          </h3>
+          <div class="progress-pct">{{ stats.life_progress.pct_complete }}%</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="lifeProgressBar"
+                 style="width: {{ stats.life_progress.pct_complete }}%"></div>
+          </div>
+          <div class="progress-meta">
+            <span>{{ stats.life_progress.pct_complete }}% of {{ stats.life_progress.avg_lifespan }}-year lifespan</span>
+          </div>
+          <div class="progress-details">
+            <div class="prog-detail">
+              <span class="prog-label">Remaining</span>
+              <span class="prog-val accent">~{{ stats.life_progress.remaining_years }} yrs</span>
+            </div>
+            <div class="prog-detail">
+              <span class="prog-label">Days Left</span>
+              <span class="prog-val">~{{ "{:,}".format(stats.life_progress.remaining_days) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Birthday Countdown -->
+        <div class="glass-card birthday-card">
+          <h3 class="card-title">
+            <i class="bi bi-gift accent-gold"></i> Birthday Countdown
+          </h3>
+          {% if stats.birthday.is_today %}
+          <div class="bday-today">🎉 Happy Birthday! 🎉</div>
+          {% else %}
+          <div class="bday-countdown">
+            <div class="bday-num" id="bdayDays">{{ stats.birthday.days_left }}</div>
+            <div class="bday-label">days until</div>
+            <div class="bday-date accent-gold">{{ stats.birthday.next_bday }}</div>
+          </div>
+          <div class="bday-timer-wrap">
+            <div class="bday-timer-label">Live countdown</div>
+            <div class="bday-live mono" id="bdayLive">--:--:--:--</div>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Section: Day vs Night ─────────────────────────────────────────── -->
+    <section class="dash-section">
+      <div class="two-col-grid">
+        <div class="glass-card day-night-card">
+          <h3 class="card-title"><i class="bi bi-brightness-half accent"></i> Day vs Night Split</h3>
+          <div class="day-night-stats">
+            <div class="dn-item day-item">
+              <i class="bi bi-sun-fill"></i>
+              <span class="dn-val">{{ "{:,}".format(stats.day_night.day_days) }}</span>
+              <span class="dn-label">Days in Daylight</span>
+              <span class="dn-hours mono">({{ "{:,}".format(stats.day_night.day_hours) }} hrs)</span>
+            </div>
+            <div class="dn-divider"></div>
+            <div class="dn-item night-item">
+              <i class="bi bi-moon-stars-fill"></i>
+              <span class="dn-val">{{ "{:,}".format(stats.day_night.night_days) }}</span>
+              <span class="dn-label">Days in Night</span>
+              <span class="dn-hours mono">({{ "{:,}".format(stats.day_night.night_hours) }} hrs)</span>
+            </div>
+          </div>
+          <p class="dn-note">Assumes day = 6 AM–6 PM, night = 6 PM–6 AM</p>
+        </div>
+
+        <!-- Fun stats mini cards -->
+        <div class="glass-card bio-mini-card">
+          <h3 class="card-title"><i class="bi bi-heart-pulse accent-red"></i> Quick Bio Stats</h3>
+          <div class="bio-mini-grid">
+            <div class="bio-mini">
+              <span class="bio-icon">❤️</span>
+              <span class="bio-val mono">{{ "{:,}".format(stats.fun_stats.heartbeats) }}</span>
+              <span class="bio-lbl">Heartbeats</span>
+            </div>
+            <div class="bio-mini">
+              <span class="bio-icon">🌬️</span>
+              <span class="bio-val mono">{{ "{:,}".format(stats.fun_stats.breaths) }}</span>
+              <span class="bio-lbl">Breaths</span>
+            </div>
+            <div class="bio-mini">
+              <span class="bio-icon">😴</span>
+              <span class="bio-val mono">{{ stats.fun_stats.sleep_years }} yrs</span>
+              <span class="bio-lbl">Sleep Time</span>
+            </div>
+            <div class="bio-mini">
+              <span class="bio-icon">🚶</span>
+              <span class="bio-val mono">{{ "{:,}".format(stats.fun_stats.steps_km) }} km</span>
+              <span class="bio-lbl">Steps Walked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section: Charts ──────────────────────────────────────────────── -->
+    <section id="charts" class="dash-section">
+      <h3 class="section-title">📊 Visual Analytics</h3>
+      <div class="charts-grid">
+
+        <div class="glass-card chart-card">
+          <h4 class="chart-title">Day vs Night Distribution</h4>
+          <canvas id="pieChart" height="240"></canvas>
+        </div>
+
+        <div class="glass-card chart-card">
+          <h4 class="chart-title">Age Breakdown</h4>
+          <canvas id="barChart" height="240"></canvas>
+        </div>
+
+        <div class="glass-card chart-card chart-wide">
+          <h4 class="chart-title">Life Progress Overview</h4>
+          <canvas id="progressChart" height="160"></canvas>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Section: Full Bio Stats ──────────────────────────────────────── -->
+    <section id="biostats" class="dash-section">
+      <h3 class="section-title">🧬 Detailed Life Statistics</h3>
+      <div class="bio-table-wrap glass-card">
+        <table class="bio-table">
+          <thead>
+            <tr><th>Statistic</th><th>Estimated Value</th><th>Context</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="stat-icon">❤️</span> Heartbeats</td>
+              <td class="mono accent">{{ "{:,}".format(stats.fun_stats.heartbeats) }}</td>
+              <td class="dim">@ 72 bpm average</td>
+            </tr>
+            <tr>
+              <td><span class="stat-icon">🌬️</span> Breaths Taken</td>
+              <td class="mono accent">{{ "{:,}".format(stats.fun_stats.breaths) }}</td>
+              <td class="dim">@ 16 breaths/min</td>
+            </tr>
+            <tr>
+              <td><span class="stat-icon">😴</span> Sleep Time</td>
+              <td class="mono accent">{{ stats.fun_stats.sleep_days }} days</td>
+              <td class="dim">≈ {{ stats.fun_stats.sleep_years }} years (⅓ of life)</td>
+            </tr>
+            <tr>
+              <td><span class="stat-icon">🚶</span> Steps Walked</td>
+              <td class="mono accent">{{ "{:,}".format(stats.fun_stats.steps) }}</td>
+              <td class="dim">≈ {{ "{:,}".format(stats.fun_stats.steps_km) }} km walked</td>
+            </tr>
+            <tr>
+              <td><span class="stat-icon">☀️</span> Days in Daylight</td>
+              <td class="mono accent">{{ "{:,}".format(stats.day_night.day_days) }}</td>
+              <td class="dim">06:00 – 18:00</td>
+            </tr>
+            <tr>
+              <td><span class="stat-icon">🌙</span> Nights Lived</td>
+              <td class="mono accent">{{ "{:,}".format(stats.day_night.night_days) }}</td>
+              <td class="dim">18:00 – 06:00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Section: Time Insights ───────────────────────────────────────── -->
+    <section id="insights" class="dash-section">
+      <h3 class="section-title">💡 Time Insights</h3>
+      <div class="insights-grid">
+        {% for insight in stats.insights %}
+        <div class="insight-card glass-card">
+          <p>{{ insight }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="dash-footer">
+      <span>Life Timeline Analyzer</span>
+      <span class="dim">·</span>
+      <span class="dim">Your time, visualized.</span>
+      <span class="dim">·</span>
+      <a href="/export/pdf" class="accent-link">
+        <i class="bi bi-download"></i> Download PDF Report
+      </a>
+    </footer>
+
+  </main>
+</div>
+
+<!-- Hidden data for JS -->
+<script id="statsData" type="application/json">{{ stats | tojson }}</script>
+<script id="dobData"   type="application/json">"{{ dob }}"</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
