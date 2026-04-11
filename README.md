@@ -120,7 +120,3 @@ CREATE TABLE user_data (
 | Timezone | pytz |
 
 
-
-
-output:
-
