@@ -120,3 +120,9 @@ CREATE TABLE user_data (
 | Timezone | pytz |
 
 
+
+output:
+<img width="1355" height="724" alt="Screenshot 2026-04-11 212633 - Copy" src="https://github.com/user-attachments/assets/37a2ac6e-5fb0-4256-95a4-a48111bc8600" />
+
+
+
