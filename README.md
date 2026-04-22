@@ -44,7 +44,7 @@ life_timeline/
         └── dashboard.js     # Live counters, charts, countdown
 ```
 
-## 🚀 Running Locally
+## 🚀 Running Locally 
 
 ### Prerequisites
 - Python 3.9+
