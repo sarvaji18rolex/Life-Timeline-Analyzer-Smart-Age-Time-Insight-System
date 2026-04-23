@@ -52,6 +52,7 @@ life_timeline/
 
 ### Steps
 
+
 ```bash
 # 1. Clone / unzip the project
 cd life_timeline
