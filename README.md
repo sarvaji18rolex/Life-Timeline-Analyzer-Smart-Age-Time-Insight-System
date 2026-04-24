@@ -4,6 +4,7 @@ A full-stack Flask + SQLite web application that turns your date of birth into a
 
 ## ✨ Features
 
+
 | Feature | Details |
 |---|---|
 | 🔐 Auth | Register, login, logout with password hashing |
